@@ -3,39 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIARIO OFICIAL - O.I.M.C.</title>
+    <title>Noticias JasoOIMC - Seguridad Nivel 4</title>
     <style>
-        /* Estilos Generales y Tipografía de Periódico */
         body { font-family: 'Times New Roman', serif; margin: 0; background: #e9ebee; color: #1a1a1a; }
-        
-        /* Barra de Navegación Superior */
-        .nav-top { background: #1a252f; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .back-btn { text-decoration: none; color: white; background: #3498db; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-family: sans-serif; font-size: 0.9rem; border: 1px solid #2980b9; transition: 0.3s; }
-        .back-btn:hover { background: #2980b9; }
+        .nav-top { background: #1a252f; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .back-btn { text-decoration: none; color: white; background: #3498db; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-family: sans-serif; font-size: 0.9rem; }
         .admin-btn { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; display: none; font-weight: bold; font-family: sans-serif; }
-
-        /* Encabezado Principal */
         .masthead { background: #2c3e50; color: white; padding: 40px 20px; text-align: center; border-bottom: 8px double #e74c3c; }
-        .masthead h1 { margin: 0; font-size: 3rem; letter-spacing: 4px; text-transform: uppercase; border-bottom: 2px solid rgba(255,255,255,0.2); display: inline-block; padding-bottom: 10px; }
-        .masthead p { margin-top: 10px; font-style: italic; font-size: 1.2rem; color: #bdc3c7; }
-
+        .masthead h1 { margin: 0; font-size: 3rem; letter-spacing: 4px; text-transform: uppercase; }
         .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        
-        /* Panel de Redacción (Oculto) */
+        #system-status { display: none; background: #1a252f; color: #2ecc71; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-family: monospace; border-left: 5px solid #27ae60; line-height: 1.5; }
         #admin-panel { display: none; background: #d4edda; padding: 25px; border-radius: 10px; margin-bottom: 40px; border: 2px solid #28a745; font-family: sans-serif; }
-        #admin-panel h3 { margin-top: 0; color: #155724; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
-        .publish-btn { background: #28a745; color: white; border: none; padding: 12px 30px; cursor: pointer; font-weight: bold; border-radius: 5px; width: 100%; }
-
-        /* Tarjetas de Noticias */
-        .news-card { background: white; padding: 30px; margin-bottom: 30px; border-bottom: 3px solid #2c3e50; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; }
-        .news-meta { color: #e74c3c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .news-card h2 { margin: 10px 0; color: #2c3e50; font-size: 2.2rem; line-height: 1.1; }
-        .news-content { line-height: 1.6; font-size: 1.2rem; margin: 20px 0; text-align: justify; }
-        .news-footer { font-size: 0.8rem; color: #888; text-align: right; font-style: italic; border-top: 1px solid #eee; padding-top: 10px; }
-
-        /* Candado Secreto */
-        .login-trigger { position: fixed; bottom: 20px; right: 20px; opacity: 0.2; transition: 0.5s; z-index: 200; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .news-card { background: white; padding: 30px; margin-bottom: 30px; border-bottom: 3px solid #2c3e50; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .news-meta { color: #e74c3c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .login-trigger { position: fixed; bottom: 20px; right: 20px; opacity: 0.1; transition: 0.5s; }
         .login-trigger:hover { opacity: 1; }
     </style>
 </head>
@@ -47,20 +29,21 @@
     </div>
 
     <div class="masthead">
-        <h1>EL DIARIO DE LA VICTORIA</h1>
-        <p>Garantizando la Verdad y el Orden en la O.I.M.C.</p>
+        <h1>NOTICIAS JASOOIMC</h1>
+        <p>Sistema de Información Cifrado - O.I.M.C.</p>
     </div>
 
     <div class="container">
+        <div id="system-status"></div>
+
         <div id="admin-panel">
-            <h3>✍️ Nueva Entrada del Gobernador</h3>
+            <h3>✍️ Nueva Entrada de Noticias JasoOIMC</h3>
             <input type="text" id="news-title" placeholder="Título de la noticia...">
             <textarea id="news-body" rows="6" placeholder="Escriba el informe detallado..."></textarea>
-            <button onclick="publish()" class="publish-btn">PUBLICAR EN TODA LA RED</button>
+            <button onclick="publish()" style="background:#28a745; color:white; border:none; padding:12px; cursor:pointer; width:100%; border-radius:5px; font-weight:bold;">PUBLICAR</button>
         </div>
 
-        <div id="news-feed">
-            </div>
+        <div id="news-feed"></div>
     </div>
 
     <div class="login-trigger">
@@ -68,17 +51,39 @@
     </div>
 
     <script>
-        // Cargar noticias al iniciar
-        window.onload = function() {
-            loadNews();
+        // BASE DE DATOS OFICIAL SEGÚN TABLA DE USUARIOS
+        const usersDB = {
+            "juan": "2313",
+            "iñaki": "1010",
+            "asier": "2020",
+            "amets": "4040",
+            "erika": "5050",
+            "nahia": "6060",
+            "gaizka": "7070",
+            "mikel": "8080",
+            "yolanda": "9090",
+            "jesús": "1365"
         };
 
-        // Sistema de autenticación discreto
+        window.onload = function() { loadNews(); };
+
         function askAccess() {
-            const user = prompt("Identificación de Mando:");
-            if (user && user.toLowerCase() === 'juan') {
-                document.getElementById('show-editor-btn').style.display = 'block';
-                alert("Acceso concedido a la imprenta central, Gobernador.");
+            const user = prompt("USUARIO O.I.M.C.:").toLowerCase().trim();
+            
+            if (usersDB[user]) {
+                const pin = prompt("INTRODUZCA PIN DE SEGURIDAD:");
+                
+                if (pin === usersDB[user]) {
+                    document.getElementById('show-editor-btn').style.display = 'block';
+                    const status = document.getElementById('system-status');
+                    status.style.display = 'block';
+                    status.innerHTML = `> SESIÓN INICIADA: ${user.toUpperCase()}<br>> RANGO: AUTORIZADO<br>> INDUSTRIA: OPERATIVA<br>> ENCRIPTACIÓN: AES-256 ACTIVE`;
+                    alert("Acceso confirmado. Bienvenido al sistema JasoOIMC.");
+                } else {
+                    alert("PIN INCORRECTO. Intento de acceso registrado.");
+                }
+            } else {
+                alert("Usuario no localizado en la base de datos.");
             }
         }
 
@@ -87,25 +92,17 @@
             panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
         }
 
-        // Publicar y Guardar en Memoria del Navegador
         function publish() {
             const t = document.getElementById('news-title').value;
             const b = document.getElementById('news-body').value;
-            const d = new Date().toLocaleDateString('es-ES', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            const d = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-            if (!t || !b) return alert("Debe rellenar el título y el cuerpo.");
+            if (!t || !b) return alert("Rellene todos los campos.");
 
             const entry = { title: t, body: b, date: d };
-            let history = JSON.parse(localStorage.getItem('diario_oimc_data')) || [];
-            history.unshift(entry); // La más nueva primero
-            localStorage.setItem('diario_oimc_data', JSON.stringify(history));
+            let history = JSON.parse(localStorage.getItem('jaso_oimc_data')) || [];
+            history.unshift(entry);
+            localStorage.setItem('jaso_oimc_data', JSON.stringify(history));
 
             document.getElementById('news-title').value = '';
             document.getElementById('news-body').value = '';
@@ -113,25 +110,19 @@
             loadNews();
         }
 
-        // Cargar y dibujar las noticias
         function loadNews() {
             const feed = document.getElementById('news-feed');
-            const history = JSON.parse(localStorage.getItem('diario_oimc_data')) || [];
-
+            const history = JSON.parse(localStorage.getItem('jaso_oimc_data')) || [];
             if (history.length === 0) {
-                feed.innerHTML = `
-                    <div class="news-card" style="text-align:center;">
-                        <p style="color:#666; font-style:italic;">Esperando comunicados oficiales de la O.I.M.C...</p>
-                    </div>`;
+                feed.innerHTML = `<div class="news-card" style="text-align:center;"><p>Esperando noticias oficiales...</p></div>`;
                 return;
             }
-
             feed.innerHTML = history.map(n => `
                 <div class="news-card">
-                    <span class="news-meta">Emitido el ${n.date}</span>
+                    <span class="news-meta">O.I.M.C. OFICIAL | ${n.date}</span>
                     <h2>${n.title}</h2>
                     <div class="news-content">${n.body.replace(/\n/g, '<br>')}</div>
-                    <div class="news-footer">Oficina de Prensa y Propaganda - Gobernación Juan</div>
+                    <div style="text-align:right; font-size:0.8rem; color:#888;">Noticias JasoOIMC - Verificado</div>
                 </div>
             `).join('');
         }
