@@ -2,49 +2,179 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Jaso-O.I.M.C. - Diario Oficial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Central Jaso-O.I.M.C.</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .header { background: #2c3e50; color: white; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
-        .noticia { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #e74c3c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        img { max-width: 100%; border-radius: 5px; margin-top: 10px; }
-        small { color: #7f8c8d; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #e9ebee; color: #1a1a1a; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .header { background: #2c3e50; color: white; padding: 15px; text-align: center; border-bottom: 4px solid #e74c3c; }
+        .nav-bar { display: none; background: #34495e; padding: 10px; justify-content: center; gap: 20px; sticky; top: 0; z-index: 100; flex-wrap: wrap; }
+        .btn-nav { color: white; text-decoration: none; font-weight: bold; padding: 10px 15px; border-radius: 5px; cursor: pointer; border: none; background: none; font-size: 0.9rem; }
+        .btn-nav:hover { background: rgba(255,255,255,0.1); }
+        .btn-banco { background: #f1c40f; color: #2c3e50; padding: 10px 15px; border-radius: 5px; font-weight: bold; text-decoration: none; }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .section { display: none; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 400px; }
+        .active { display: block; }
+        .news-item { border-left: 5px solid #e74c3c; padding: 15px; background: #f8f9fa; margin-bottom: 20px; border-radius: 5px; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn-pub { background: #27ae60; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="header"><h1>JASO-O.I.M.C.</h1><p>COMUNICADOS OFICIALES</p></div>
-    <div id="noticias">Cargando noticias...</div>
 
-    <script>
-        // --- CONFIGURACIÓN ---
-        const LINK_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSJDhYRb1tgHja5_oy-Eag_50BrQ2Lwh2WJPKrzQWXOgOOnQANRtirDMoicC0bmAVRDbS1gFzKQ_mNO/pub?output=csv";
+<div id="login-overlay">
+    <div class="login-box">
+        <h2 style="margin:0 0 10px 0;">Jaso-O.I.M.C.</h2>
+        <p style="color: #666; margin-bottom: 20px;">Identificación de Ciudadano</p>
+        <input type="text" id="user-input" placeholder="Nombre de Usuario">
+        <input type="password" id="pass-input" placeholder="PIN de Seguridad">
+        <button onclick="checkLogin()" style="background:#e74c3c; color:white; border:none; padding:12px; width:100%; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">ACCEDER</button>
+    </div>
+</div>
 
-        async function leerNoticias() {
-            try {
-                const respuesta = await fetch(LINK_CSV);
-                const texto = await respuesta.text();
-                const filas = texto.split('\n').slice(1); // Ignora la fila de títulos
-                
-                let htmlFinal = "";
-                filas.forEach(fila => {
-                    const columnas = fila.split(',');
-                    if(columnas.length >= 2) {
-                        htmlFinal += `
-                            <div class="noticia">
-                                <small>${columnas[2] || ''}</small>
-                                <h2>${columnas[0]}</h2>
-                                <p>${columnas[1]}</p>
-                                ${columnas[3] ? `<img src="${columnas[3]}">` : ''}
-                            </div>
-                        `;
-                    }
-                });
-                document.getElementById('noticias').innerHTML = htmlFinal || "No hay noticias hoy.";
-            } catch (error) {
-                document.getElementById('noticias').innerHTML = "Error al conectar con la base de datos.";
+<div class="header">
+    <h1 style="margin:0; font-size: 1.4rem;">CENTRAL INFORMATIVA JASO-O.I.M.C.</h1>
+</div>
+
+<div id="nav-bar" class="nav-bar">
+    <button class="btn-nav" onclick="showTab('tab-noticias')">📰 NOTICIAS</button>
+    <button id="btn-gestionar" class="btn-nav hidden" onclick="showTab('tab-gestionar')" style="color: #2ecc71;">✍️ GESTIONAR</button>
+    <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn-banco">🏦 BANCO CENTRAL</a>
+    <button class="btn-nav" onclick="location.reload()" style="color:#ff7675;">🚪 SALIR</button>
+</div>
+
+<div class="container">
+    <div id="tab-noticias" class="section active">
+        <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">Diario Oficial Global</h2>
+        <div id="news-feed">Conectando con la base de datos...</div>
+    </div>
+
+    <div id="tab-gestionar" class="section">
+        <h2 style="color: #27ae60;">Consola de Redacción</h2>
+        <p>Solo personal autorizado (Juan) puede emitir comunicados.</p>
+        <input type="text" id="title-in" placeholder="Título del comunicado...">
+        <textarea id="body-in" rows="6" placeholder="Escriba el mensaje oficial aquí..."></textarea>
+        <button onclick="publish()" id="pub-btn" class="btn-pub">EMITIR COMUNICADO GLOBAL</button>
+        <hr style="margin: 30px 0;">
+        <h3>Administrar Mensajes</h3>
+        <div id="admin-list"></div>
+    </div>
+</div>
+
+<script>
+    // Configuración de la nube
+    const CLOUD_URL = "https://getpantry.cloud/apiv1/pantry/086383e5-89f5-46f9-8664-d67b73895e63/basket/oimc_global";
+
+    // Base de datos de pines según tu tabla
+    const users = {
+        "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040",
+        "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080",
+        "yolanda": "9090", "jesús": "1365"
+    };
+
+    function checkLogin() {
+        const u = document.getElementById('user-input').value.toLowerCase().trim();
+        const p = document.getElementById('pass-input').value.trim();
+
+        if (users[u] === p) {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('nav-bar').style.display = 'flex';
+            
+            // Si es Juan, activamos el botón de gestionar
+            if (u === "juan") {
+                document.getElementById('btn-gestionar').classList.remove('hidden');
             }
+            loadData();
+        } else {
+            alert("PIN o Usuario incorrecto. Acceso denegado.");
         }
-        leerNoticias();
-    </script>
+    }
+
+    async function loadData() {
+        const feed = document.getElementById('news-feed');
+        try {
+            const res = await fetch(CLOUD_URL);
+            const data = await res.json();
+            render(data.items || []);
+        } catch (e) {
+            feed.innerHTML = "No hay comunicados oficiales emitidos.";
+        }
+    }
+
+    async function publish() {
+        const t = document.getElementById('title-in').value;
+        const b = document.getElementById('body-in').value;
+        const btn = document.getElementById('pub-btn');
+
+        if(!t || !b) return alert("Faltan datos por rellenar.");
+
+        btn.innerText = "Sincronizando...";
+        btn.disabled = true;
+
+        let list = [];
+        try {
+            const res = await fetch(CLOUD_URL);
+            const data = await res.json();
+            list = data.items || [];
+        } catch(e) {}
+
+        list.unshift({ id: Date.now(), title: t, body: b, date: new Date().toLocaleString() });
+
+        await fetch(CLOUD_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ items: list })
+        });
+
+        document.getElementById('title-in').value = "";
+        document.getElementById('body-in').value = "";
+        btn.innerText = "EMITIR COMUNICADO GLOBAL";
+        btn.disabled = false;
+        alert("Noticia publicada correctamente.");
+        loadData();
+        showTab('tab-noticias');
+    }
+
+    async function deleteMsg(id) {
+        if(!confirm("¿Borrar comunicado?")) return;
+        const res = await fetch(CLOUD_URL);
+        const data = await res.json();
+        const newList = data.items.filter(i => i.id !== id);
+        
+        await fetch(CLOUD_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ items: newList })
+        });
+        loadData();
+    }
+
+    function render(items) {
+        const feed = document.getElementById('news-feed');
+        const admin = document.getElementById('admin-list');
+        
+        feed.innerHTML = items.map(i => `
+            <div class="news-item">
+                <small style="color: #e74c3c; font-weight: bold;">${i.date}</small>
+                <h3>${i.title}</h3>
+                <p style="white-space: pre-wrap;">${i.body}</p>
+            </div>
+        `).join('') || "No hay noticias.";
+
+        admin.innerHTML = items.map(i => `
+            <div style="background:#f1f1f1; padding:10px; margin-bottom:10px; border-radius:5px; display:flex; justify-content:space-between; align-items:center;">
+                <span>${i.title}</span>
+                <button onclick="deleteMsg(${i.id})" style="background:#ff7675; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">Borrar</button>
+            </div>
+        `).join('');
+    }
+
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+</script>
 </body>
 </html>
