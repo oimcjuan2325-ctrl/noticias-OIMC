@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noticias JasoOIMC - Portal Oficial</title>
+    <title>Noticias JasoOIMC - Portal de Mando</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #e9ebee; color: #1a1a1a; }
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 2000; }
@@ -14,14 +14,23 @@
         .tab-btn:hover { background: #4e6a85; }
         .tab-btn.active { background: #e74c3c; }
         .container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
-        .tab-content { display: none; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 300px; }
+        .tab-content { display: none; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 400px; }
         .tab-content.active { display: block; }
-        .news-item { padding: 15px; border-left: 5px solid #e74c3c; background: #f8f9fa; margin-bottom: 15px; border-radius: 4px; position: relative; }
+        
+        /* Noticias */
+        .news-item { padding: 15px; border-left: 5px solid #e74c3c; background: #f8f9fa; margin-bottom: 20px; border-radius: 4px; position: relative; }
+        .news-img { max-width: 100%; border-radius: 8px; margin-top: 15px; display: block; }
+        
         input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .preview-area { border: 2px dashed #ccc; padding: 10px; text-align: center; color: #666; margin: 10px 0; min-height: 50px; }
+        .preview-area img { max-height: 150px; border-radius: 5px; }
+        
         .btn-main { background: #e74c3c; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-        .banco-link-card { text-align: center; padding: 40px; border: 2px dashed #3498db; border-radius: 10px; }
-        .btn-banco { display: inline-block; background: #3498db; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.3s; }
-        .btn-delete { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-top: 10px; }
+        .btn-banco { display: inline-block; background: #3498db; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; }
+        
+        /* Botón de eliminar pequeño abajo */
+        .btn-delete { background: #ff4757; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; margin-top: 10px; transition: 0.2s; }
+        .btn-delete:hover { background: #ff6b81; }
     </style>
 </head>
 <body>
@@ -29,10 +38,10 @@
 <div id="login-overlay">
     <div class="login-box">
         <h2 style="margin-top:0; color:#2c3e50;">O.I.M.C.</h2>
-        <p>Introduzca Usuario y PIN</p>
+        <p>Credenciales de Acceso</p>
         <input type="text" id="user-input" placeholder="Usuario">
         <input type="password" id="pass-input" placeholder="PIN">
-        <button onclick="checkLogin()" class="btn-main">ACCEDER AL SISTEMA</button>
+        <button onclick="checkLogin()" class="btn-main">ENTRAR</button>
     </div>
 </div>
 
@@ -48,36 +57,57 @@
 
 <div class="container">
     <div id="tab-banco" class="tab-content active">
-        <div class="banco-link-card">
-            <h2 style="color:#2c3e50;">Terminal Bancaria O.I.M.C.</h2>
-            <p>Estado: <span style="color:#27ae60; font-weight:bold;">EN LÍNEA</span></p>
+        <div style="text-align:center; padding:40px; border:2px dashed #3498db; border-radius:10px;">
+            <h2 style="color:#2c3e50;">Sistema Bancario O.I.M.C.</h2>
             <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn-banco">IR AL BANCO O.I.M.C.</a>
         </div>
     </div>
 
     <div id="tab-ver" class="tab-content">
-        <h2 style="border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">Últimos Comunicados</h2>
+        <h2 style="border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">Diario de Noticias</h2>
         <div id="news-feed"></div>
     </div>
 
     <div id="tab-redactar" class="tab-content">
-        <h2 style="color:#27ae60;">Consola de Mando</h2>
-        <input type="text" id="news-title" placeholder="Título...">
-        <textarea id="news-body" rows="4" placeholder="Contenido..."></textarea>
-        <button onclick="saveNews()" class="btn-main" style="background:#27ae60; margin-bottom: 20px;">PUBLICAR</button>
+        <h2 style="color:#27ae60;">Centro de Publicación</h2>
+        <input type="text" id="news-title" placeholder="Título de la noticia...">
+        <textarea id="news-body" rows="4" placeholder="Escribe aquí. Puedes pegar una imagen con Ctrl+V"></textarea>
         
-        <h3 style="border-top: 1px solid #ccc; padding-top: 15px;">Panel de Borrado</h3>
+        <div id="image-preview-container" class="preview-area">Imagen no adjuntada</div>
+
+        <button onclick="saveNews()" class="btn-main" style="background:#27ae60; margin-bottom: 30px;">PUBLICAR NOTICIA</button>
+        
+        <h2 style="border-top: 2px solid #eee; padding-top: 20px; color:#2c3e50;">Historial y Control de Borrado</h2>
         <div id="admin-news-list">
             </div>
     </div>
 </div>
 
 <script>
-    const usersDB = {
-        "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040",
-        "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080",
-        "yolanda": "9090", "jesús": "1365"
-    };
+    let tempImageData = null;
+    const usersDB = { "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", "yolanda": "9090", "jesús": "1365" };
+
+    // Captura de Ctrl+V para imágenes
+    document.addEventListener('paste', function (e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file') {
+                const blob = item.getAsFile();
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    tempImageData = event.target.result;
+                    document.getElementById('image-preview-container').innerHTML = `<img src="${tempImageData}"><br><span onclick="removeImg()" style="color:red; cursor:pointer; font-size:12px;">[Quitar]</span>`;
+                };
+                reader.readAsDataURL(blob);
+            }
+        }
+    });
+
+    function removeImg() {
+        tempImageData = null;
+        document.getElementById('image-preview-container').innerHTML = "Imagen no adjuntada";
+    }
 
     function checkLogin() {
         const user = document.getElementById('user-input').value.toLowerCase().trim();
@@ -87,7 +117,7 @@
             document.getElementById('nav-bar').style.display = 'flex';
             if (user === 'juan') { document.getElementById('admin-tab-btn').style.display = 'block'; }
             loadNews();
-        } else { alert("PIN o Usuario inválido."); }
+        } else { alert("Error de acceso."); }
     }
 
     function openTab(tabId, btn) {
@@ -100,19 +130,22 @@
     function saveNews() {
         const t = document.getElementById('news-title').value;
         const b = document.getElementById('news-body').value;
-        if (!t || !b) return alert("Rellene los campos");
-        const news = { id: Date.now(), title: t, body: b, date: new Date().toLocaleString() };
+        if (!t || !b) return alert("Faltan datos");
+
+        const news = { id: Date.now(), title: t, body: b, image: tempImageData, date: new Date().toLocaleString() };
         let history = JSON.parse(localStorage.getItem('jasooimc_news')) || [];
         history.unshift(news);
         localStorage.setItem('jasooimc_news', JSON.stringify(history));
+
         document.getElementById('news-title').value = "";
         document.getElementById('news-body').value = "";
+        removeImg();
         loadNews();
-        alert("Publicado.");
+        alert("¡Noticia publicada!");
     }
 
     function deleteNews(id) {
-        if(confirm("¿Seguro que desea eliminar este comunicado oficial?")) {
+        if(confirm("¿Seguro que quieres eliminar esta noticia de forma permanente?")) {
             let history = JSON.parse(localStorage.getItem('jasooimc_news')) || [];
             history = history.filter(n => n.id !== id);
             localStorage.setItem('jasooimc_news', JSON.stringify(history));
@@ -125,28 +158,25 @@
         const adminList = document.getElementById('admin-news-list');
         const history = JSON.parse(localStorage.getItem('jasooimc_news')) || [];
         
-        if (history.length === 0) {
-            feed.innerHTML = "<p>No hay noticias.</p>";
-            adminList.innerHTML = "<p>No hay nada que borrar.</p>";
-            return;
-        }
-
-        // Cargar en vista pública
+        // Vista para todos
         feed.innerHTML = history.map(n => `
             <div class="news-item">
-                <small style="color:#e74c3c; font-weight:bold;">${n.date}</small>
+                <small style="color:#e74c3c;">${n.date}</small>
                 <h3>${n.title}</h3>
                 <p>${n.body.replace(/\n/g, '<br>')}</p>
+                ${n.image ? `<img src="${n.image}" class="news-img">` : ''}
             </div>
-        `).join('');
+        `).join('') || "<p>Sin noticias.</p>";
 
-        // Cargar en vista de administrador (con botón borrar)
+        // Vista de gestión (Solo para Juan)
         adminList.innerHTML = history.map(n => `
-            <div style="border-bottom:1px solid #eee; padding:10px 0;">
-                <strong>${n.title}</strong> (${n.date})
-                <br><button onclick="deleteNews(${n.id})" class="btn-delete">BORRAR DEFINITIVAMENTE</button>
+            <div class="news-item" style="border-left-color: #27ae60;">
+                <small>${n.date}</small>
+                <h3>${n.title}</h3>
+                <p style="font-size: 0.9rem; color: #666;">${n.body.substring(0, 50)}...</p>
+                <button onclick="deleteNews(${n.id})" class="btn-delete">ELIMINAR NOTICIA</button>
             </div>
-        `).join('');
+        `).join('') || "<p>No hay noticias para gestionar.</p>";
     }
 </script>
 </body>
