@@ -1,108 +1,26 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noticias Jaso-O.I.M.C. - RED GLOBAL</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #e9ebee; color: #1a1a1a; }
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .masthead { background: #2c3e50; color: white; padding: 20px; text-align: center; border-bottom: 5px solid #e74c3c; }
-        .nav-tabs { display: none; justify-content: space-between; align-items: center; background: #34495e; position: sticky; top: 0; z-index: 100; padding: 0 10px; }
-        .tab-btn { padding: 15px; cursor: pointer; color: white; border: none; background: none; font-weight: bold; }
-        .tab-btn.active { background: #e74c3c; }
-        .logout-btn { background: #c0392b; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
-        .tab-content { display: none; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 400px; }
-        .tab-content.active { display: block; }
-        .news-item { padding: 15px; border-left: 5px solid #e74c3c; background: #f8f9fa; margin-bottom: 20px; border-radius: 4px; }
-        .news-img { max-width: 100%; border-radius: 8px; margin-top: 10px; display: block; }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        .btn-main { background: #e74c3c; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn-delete { background: #ff4757; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; margin-top: 10px; }
-    </style>
-</head>
-<body>
-
-<div id="login-overlay">
-    <div class="login-box">
-        <h2>Jaso-O.I.M.C. GLOBAL</h2>
-        <input type="text" id="user-input" placeholder="Usuario">
-        <input type="password" id="pass-input" placeholder="PIN">
-        <button onclick="checkLogin()" class="btn-main">ENTRAR AL SISTEMA</button>
-    </div>
-</div>
-
-<div class="masthead"><h1>NOTICIAS JASO-O.I.M.C.</h1></div>
-
-<div id="nav-bar" class="nav-tabs">
-    <div class="tabs-group">
-        <button class="tab-btn active" onclick="openTab('tab-banco', this)">🏦 BANCO</button>
-        <button class="tab-btn" onclick="openTab('tab-ver', this)">📰 NOTICIAS</button>
-        <button id="admin-tab-btn" class="tab-btn" onclick="openTab('tab-redactar', this)" style="display: none; color: #2ecc71;">✍️ GESTIONAR</button>
-    </div>
-    <button class="logout-btn" onclick="location.reload()">SALIR</button>
-</div>
-
-<div class="container">
-    <div id="tab-banco" class="tab-content active">
-        <div style="text-align:center; padding:40px; border:2px dashed #3498db; border-radius:10px;">
-            <h2>Terminal Bancaria Jaso-O.I.M.C.</h2>
-            <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" style="text-decoration:none; background:#3498db; color:white; padding:15px 30px; border-radius:8px; font-weight:bold; display:inline-block;">IR AL BANCO</a>
-        </div>
-    </div>
-
-    <div id="tab-ver" class="tab-content">
-        <h2>Diario Oficial Jaso-O.I.M.C.</h2>
-        <div id="news-feed">Cargando noticias desde la nube...</div>
-    </div>
-
-    <div id="tab-redactar" class="tab-content">
-        <h2>Redacción Global</h2>
-        <input type="text" id="news-title" placeholder="Título...">
-        <textarea id="news-body" rows="4" placeholder="Escriba aquí el comunicado..."></textarea>
-        <div id="image-preview" style="border:1px dashed #ccc; padding:10px; margin-bottom:10px; text-align:center; color:gray;">Pega imagen (Ctrl+V)</div>
-        <button onclick="saveNews()" class="btn-main" id="publish-btn" style="background:#27ae60;">PUBLICAR PARA TODOS</button>
-        <hr>
-        <div id="admin-news-list"></div>
-    </div>
-</div>
-
 <script>
+    // URL DE LA NUBE PARA JASO-O.I.M.C.
     const CLOUD_URL = "https://kvdb.io/6E9C9U8v5F8u8L9Y9xZ7j9/noticias_jaso_oimc";
     let tempImageData = null;
     const usersDB = { "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", "yolanda": "9090", "jesús": "1365" };
 
-    document.addEventListener('paste', e => {
-        const item = e.clipboardData.items[0];
-        if (item && item.type.indexOf('image') !== -1) {
-            const reader = new FileReader();
-            reader.onload = event => {
-                tempImageData = event.target.result;
-                document.getElementById('image-preview').innerHTML = `<img src="${tempImageData}" style="height:100px;">`;
-            };
-            reader.readAsDataURL(item.getAsFile());
-        }
-    });
-
-    function checkLogin() {
-        const u = document.getElementById('user-input').value.toLowerCase().trim();
-        const p = document.getElementById('pass-input').value.trim();
-        if (usersDB[u] === p) {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('nav-bar').style.display = 'flex';
-            if (u === 'juan') document.getElementById('admin-tab-btn').style.display = 'block';
-            loadNews();
-        } else { alert("PIN incorrecto"); }
-    }
+    // ... (El resto del código de login y paste se mantiene igual) ...
 
     async function loadNews() {
+        const feed = document.getElementById('news-feed');
+        const admin = document.getElementById('admin-news-list');
+        
         try {
             const res = await fetch(CLOUD_URL);
+            if (!res.ok) throw new Error("Vacío");
             const history = await res.json();
+            
+            if (!Array.isArray(history)) { render([]); return; }
             render(history);
-        } catch (e) { render([]); }
+        } catch (e) {
+            console.log("Iniciando base de datos nueva...");
+            render([]); // Muestra "No hay noticias" en lugar de quedarse pillado
+        }
     }
 
     async function saveNews() {
@@ -111,71 +29,82 @@
         const btn = document.getElementById('publish-btn');
         if(!t || !b) return alert("Faltan datos");
 
-        btn.innerText = "PUBLICANDO...";
+        btn.innerText = "CONECTANDO CON LA NUBE...";
         btn.disabled = true;
 
         let history = [];
         try {
             const res = await fetch(CLOUD_URL);
-            history = await res.json();
-        } catch(e) {}
+            if (res.ok) {
+                history = await res.json();
+            }
+        } catch(e) { history = []; }
 
-        history.unshift({ id: Date.now(), title: t, body: b, image: tempImageData, date: new Date().toLocaleString() });
+        // Añadimos la nueva noticia
+        const newNews = { 
+            id: Date.now(), 
+            title: t, 
+            body: b, 
+            image: tempImageData, 
+            date: new Date().toLocaleString() 
+        };
+        
+        history = Array.isArray(history) ? history : [];
+        history.unshift(newNews);
 
         try {
-            await fetch(CLOUD_URL, { method: 'POST', body: JSON.stringify(history) });
-            document.getElementById('news-title').value = "";
-            document.getElementById('news-body').value = "";
-            tempImageData = null;
-            document.getElementById('image-preview').innerHTML = "Pega imagen (Ctrl+V)";
-            alert("¡Comunicado oficial Jaso-O.I.M.C. publicado!");
-            await loadNews();
-            openTab('tab-ver', document.querySelectorAll('.tab-btn')[1]);
-        } catch (e) { alert("Error de conexión"); }
-        finally {
+            // Guardar en la nube (POST)
+            const saveRes = await fetch(CLOUD_URL, { 
+                method: 'POST', 
+                body: JSON.stringify(history) 
+            });
+
+            if(saveRes.ok) {
+                document.getElementById('news-title').value = "";
+                document.getElementById('news-body').value = "";
+                tempImageData = null;
+                document.getElementById('image-preview').innerHTML = "Pega imagen (Ctrl+V)";
+                
+                alert("¡Publicado con éxito en la nube Jaso-O.I.M.C.!");
+                
+                await loadNews(); // Forzar recarga visual
+                openTab('tab-ver', document.querySelectorAll('.tab-btn')[1]);
+            } else {
+                throw new Error("Error al guardar");
+            }
+        } catch (e) { 
+            alert("Error de red: No se pudo subir a la nube."); 
+        } finally {
             btn.innerText = "PUBLICAR PARA TODOS";
             btn.disabled = false;
         }
     }
 
-    async function deleteNews(id) {
-        if(!confirm("¿Eliminar este registro?")) return;
-        try {
-            const res = await fetch(CLOUD_URL);
-            let history = await res.json();
-            history = history.filter(n => n.id !== id);
-            await fetch(CLOUD_URL, { method: 'POST', body: JSON.stringify(history) });
-            await loadNews();
-        } catch(e) { alert("Error al borrar"); }
-    }
-
+    // Asegúrate de que la función render sea esta:
     function render(history) {
         const feed = document.getElementById('news-feed');
         const admin = document.getElementById('admin-news-list');
+        
+        if (!history || history.length === 0) {
+            feed.innerHTML = "<p style='text-align:center; color:gray;'>No hay comunicados oficiales en la red global.</p>";
+            admin.innerHTML = "<p>Esperando primera publicación...</p>";
+            return;
+        }
+
         feed.innerHTML = history.map(n => `
             <div class="news-item">
-                <small>${n.date}</small>
+                <small style="color:#e74c3c; font-weight:bold;">${n.date}</small>
                 <h3>${n.title}</h3>
                 <p>${n.body.replace(/\n/g, '<br>')}</p>
                 ${n.image ? `<img src="${n.image}" class="news-img">` : ''}
             </div>
-        `).join('') || "No hay noticias.";
+        `).join('');
 
         admin.innerHTML = history.map(n => `
-            <div class="news-item" style="border-left-color: #27ae60;">
-                <small>${n.date}</small>
-                <h3>${n.title}</h3>
-                <button class="btn-delete" onclick="deleteNews(${n.id})">BORRAR DE LA NUBE</button>
+            <div class="news-item" style="border-left-color: #27ae60; padding:10px;">
+                <strong>${n.title}</strong><br>
+                <button class="btn-delete" onclick="deleteNews(${n.id})">ELIMINAR GLOBALMENTE</button>
             </div>
         `).join('');
     }
-
-    function openTab(id, btn) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
 </script>
-</body>
-</html>
