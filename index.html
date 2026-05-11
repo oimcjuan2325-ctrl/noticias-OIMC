@@ -6,11 +6,18 @@
     <title>CENTRAL O.I.M.C.</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #1a252f; color: white; text-align: center; height: 100vh; overflow: hidden; }
+        
+        /* PANTALLA DE ACCESO */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: white; padding: 35px; border-radius: 20px; color: #333; width: 280px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        
         .header { background: #e74c3c; height: 50px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .btn-banco { background: #f1c40f; color: #2c3e50; padding: 5px 12px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.8rem; }
-        #chat-div { height: calc(100vh - 50px); width: 100%; background: #f4f4f4; }
+        
+        /* EL DOCUMENTO DE GOOGLE */
+        #doc-container { height: calc(100vh - 50px); width: 100%; background: white; }
+        iframe { width: 100%; height: 100%; border: none; }
+
         input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
@@ -23,17 +30,17 @@
         <p>Introduce tu PIN oficial</p>
         <input type="text" id="user-input" placeholder="Tu Nombre">
         <input type="password" id="pin-input" placeholder="Tu PIN">
-        <button onclick="acceder()">ENTRAR AL CHAT</button>
+        <button onclick="verificar()">ACCEDER AL SISTEMA</button>
     </div>
 </div>
 
 <div class="header">
-    <span style="font-size: 0.9rem; font-weight: bold;">COMUNICACIONES O.I.M.C.</span>
+    <span style="font-weight: bold;">CENTRAL DE DATOS O.I.M.C.</span>
     <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn-banco">🏦 BANCO</a>
 </div>
 
-<div id="chat-div">
-    <iframe src="" id="chat-frame" width="100%" height="100%" frameborder="0" allowtransparency="yes" allow="autoplay"></iframe>
+<div id="doc-container">
+    <iframe src="" id="google-doc-frame"></iframe>
 </div>
 
 <script>
@@ -43,17 +50,18 @@
         "yolanda": "9090", "jesús": "1365" 
     };
 
-    function acceder() {
-        const u = document.getElementById('user-input').value.trim();
+    function verificar() {
+        const u = document.getElementById('user-input').value.toLowerCase().trim();
         const p = document.getElementById('pin-input').value.trim();
 
-        if (usuarios[u.toLowerCase()] === p) {
-            // Este chat ya está creado y listo para recibir mensajes
-            const chatUrl = "https://www3.cbox.ws/box/?boxid=3534522&boxtag=oimc12&nme=" + u;
-            document.getElementById('chat-frame').src = chatUrl;
+        if (usuarios[u] === p) {
+            // PEGA AQUÍ TU ENLACE DE GOOGLE DOC ENTRE LAS COMILLAS
+            const miDocUrl = "https://docs.google.com/document/d/1i8r9ZUgGe-1zr-Fyq9SxXcKAnsyOPhRaN3Tc7rJKjLw/edit?usp=sharing"; 
+            
+            document.getElementById('google-doc-frame').src = miDocUrl;
             document.getElementById('login-overlay').style.display = 'none';
         } else {
-            alert("PIN o Usuario incorrecto");
+            alert("Acceso Denegado");
         }
     }
 </script>
