@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTRAL O.I.M.C. - GOBERNACIÓN</title>
+    <title>SISTEMA CENTRAL O.I.M.C.</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #1a252f; color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        /* Estilo base y fondo oscuro */
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #1a252f; color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* LOGIN */
+        /* Pantalla de Inicio de Sesión */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { background: white; padding: 35px; border-radius: 20px; color: #333; width: 280px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .logo-oimc { color: #e74c3c; font-size: 2.5rem; font-weight: bold; margin-bottom: 5px; }
+        .login-box { background: white; padding: 30px; border-radius: 15px; color: #333; width: 280px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .logo-oimc { color: #e74c3c; font-size: 2rem; font-weight: bold; margin-bottom: 10px; }
         
-        /* HEADER */
-        .header { background: #e74c3c; height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .btn { padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; border: none; cursor: pointer; text-decoration: none; color: white; transition: 0.3s; }
-        .btn-banco { background: #f1c40f; color: #2c3e50; }
+        /* Cabecera del Sistema */
+        .header { background: #e74c3c; height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .btn-salir { background: #333; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.8rem; }
         
-        /* CONTENIDO */
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: radial-gradient(circle, #2c3e50 0%, #1a252f 100%); }
-        .shield-icon { font-size: 5rem; margin-bottom: 20px; opacity: 0.3; }
+        /* Contenedor del Chat (se verá tras el PIN) */
+        #chat-window { flex-grow: 1; width: 100%; background: white; display: none; }
+        #chatra-inline-container { width: 100%; height: 100%; }
 
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        button.login-btn { width: 100%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        button.login-btn { width: 100%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -30,25 +30,20 @@
 <div id="login-overlay">
     <div class="login-box">
         <div class="logo-oimc">O.I.M.C.</div>
-        <p style="margin-bottom:20px; font-weight:bold; color: #7f8c8d;">SISTEMA CENTRAL</p>
+        <p style="margin-bottom:15px; font-weight:bold; color:#7f8c8d;">CONTROL DE ACCESO</p>
         <input type="text" id="user-input" placeholder="Nombre de Agente">
-        <input type="password" id="pin-input" placeholder="PIN de Seguridad">
-        <button class="login-btn" onclick="verificar()">ACCEDER</button>
+        <input type="password" id="pin-input" placeholder="PIN">
+        <button class="login-btn" onclick="verificar()">ACCEDER A LA CENTRAL</button>
     </div>
 </div>
 
 <div class="header">
-    <span style="font-weight:bold; letter-spacing: 1px;">SISTEMA OPERATIVO</span>
-    <div style="display:flex; gap:10px;">
-        <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn btn-banco">🏦 BANCO</a>
-        <button class="btn" style="background:#333" onclick="location.reload()">CERRAR SESIÓN</button>
-    </div>
+    <span style="font-weight:bold;">SISTEMA CENTRAL O.I.M.C.</span>
+    <button class="btn-salir" onclick="location.reload()">CERRAR SESIÓN</button>
 </div>
 
-<div class="main-content">
-    <div class="shield-icon">🏛️</div>
-    <h2 id="welcome-text">ESPERANDO AUTENTICACIÓN...</h2>
-    <p id="sub-text">Inicie sesión para acceder al chat de la organización.</p>
+<div id="chat-window">
+    <div id="chatra-inline-container"></div>
 </div>
 
 <script>
@@ -62,10 +57,15 @@
         s.src = 'https://call.chatra.io/chatra.js';
         if (d.head) d.head.appendChild(s);
     })(document, window, 'Chatra');
+
+    // Configuración para que el chat aparezca dentro de la página, no como burbuja
+    window.ChatraSetup = {
+        mode: 'inline',
+        container: '#chatra-inline-container'
+    };
 </script>
 
 <script>
-    // LISTA OFICIAL DE AGENTES Y PINS
     const usuarios = { 
         "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", 
         "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", 
@@ -78,23 +78,20 @@
         const p = document.getElementById('pin-input').value.trim();
 
         if (usuarios[uLower] === p) {
-            // Desbloquear pantalla
+            // Ocultar login y mostrar chat
             document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('welcome-text').innerText = "BIENVENIDO, AGENTE " + uRaw.toUpperCase();
-            document.getElementById('sub-text').innerText = "Conexión segura establecida. El chat está listo.";
-
-            // MAGIA DE IDENTIFICACIÓN: Pasa el nombre a Chatra automáticamente
+            document.getElementById('chat-window').style.display = 'block';
+            
+            // Pasar el nombre del agente al chat automáticamente
             if (window.Chatra) {
                 Chatra('updateIntegrationData', {
                     name: uRaw,
-                    notes: 'Miembro verificado de la O.I.M.C.'
+                    notes: 'Acceso verificado vía PIN'
                 });
-                // Muestra y abre el chat de golpe
                 Chatra('show');
-                Chatra('openChat');
             }
         } else {
-            alert("ACCESO DENEGADO: PIN o Usuario incorrecto.");
+            alert("Acceso Denegado: Usuario o PIN incorrecto.");
         }
     }
 </script>
