@@ -1,137 +1,50 @@
-<script>
-    // URL NUEVA Y REFORZADA
-    const PANTRY_ID = "086383e5-89f5-46f9-8664-d67b73895e63";
-    const BASKET_NAME = "jaso_oimc_data"; // Nombre de la base de datos
-    const PANTRY_URL = `https://getpantry.cloud/apiv1/pantry/${PANTRY_ID}/basket/${BASKET_NAME}`;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Jaso-O.I.M.C. - Diario Oficial</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .header { background: #2c3e50; color: white; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
+        .noticia { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #e74c3c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        img { max-width: 100%; border-radius: 5px; margin-top: 10px; }
+        small { color: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>JASO-O.I.M.C.</h1><p>COMUNICADOS OFICIALES</p></div>
+    <div id="noticias">Cargando noticias...</div>
 
-    let tempImageData = null;
-    const usersDB = { "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", "yolanda": "9090", "jesús": "1365" };
+    <script>
+        // --- CONFIGURACIÓN ---
+        const LINK_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSJDhYRb1tgHja5_oy-Eag_50BrQ2Lwh2WJPKrzQWXOgOOnQANRtirDMoicC0bmAVRDbS1gFzKQ_mNO/pub?output=csv";
 
-    // Login y Paste igual que antes...
-    function checkLogin() {
-        const u = document.getElementById('user-input').value.toLowerCase().trim();
-        const p = document.getElementById('pass-input').value.trim();
-        if (usersDB[u] === p) {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('nav-bar').style.display = 'flex';
-            if (u === 'juan') document.getElementById('admin-tab-btn').style.display = 'block';
-            loadNews();
-        } else { alert("PIN incorrecto"); }
-    }
-
-    async function loadNews() {
-        const feed = document.getElementById('news-feed');
-        try {
-            const res = await fetch(PANTRY_URL);
-            if (!res.ok) {
-                feed.innerHTML = "No hay noticias globales todavía.";
-                render([]);
-                return;
+        async function leerNoticias() {
+            try {
+                const respuesta = await fetch(LINK_CSV);
+                const texto = await respuesta.text();
+                const filas = texto.split('\n').slice(1); // Ignora la fila de títulos
+                
+                let htmlFinal = "";
+                filas.forEach(fila => {
+                    const columnas = fila.split(',');
+                    if(columnas.length >= 2) {
+                        htmlFinal += `
+                            <div class="noticia">
+                                <small>${columnas[2] || ''}</small>
+                                <h2>${columnas[0]}</h2>
+                                <p>${columnas[1]}</p>
+                                ${columnas[3] ? `<img src="${columnas[3]}">` : ''}
+                            </div>
+                        `;
+                    }
+                });
+                document.getElementById('noticias').innerHTML = htmlFinal || "No hay noticias hoy.";
+            } catch (error) {
+                document.getElementById('noticias').innerHTML = "Error al conectar con la base de datos.";
             }
-            const data = await res.json();
-            render(data.news || []);
-        } catch (e) {
-            feed.innerHTML = "Esperando primera publicación...";
-            render([]);
         }
-    }
-
-    async function saveNews() {
-        const t = document.getElementById('news-title').value;
-        const b = document.getElementById('news-body').value;
-        const btn = document.getElementById('publish-btn');
-        if(!t || !b) return alert("Faltan datos");
-
-        btn.innerText = "SINCRONIZANDO CON LA NUBE...";
-        btn.disabled = true;
-
-        let history = [];
-        try {
-            const res = await fetch(PANTRY_URL);
-            if (res.ok) {
-                const data = await res.json();
-                history = data.news || [];
-            }
-        } catch(e) { history = []; }
-
-        history.unshift({ 
-            id: Date.now(), 
-            title: t, 
-            body: b, 
-            image: tempImageData, 
-            date: new Date().toLocaleString() 
-        });
-
-        try {
-            // Intentamos guardar con un método que "obliga" a la nube a aceptar los datos
-            await fetch(PANTRY_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ news: history })
-            });
-            
-            alert("¡CONECTADO! Noticia enviada a la red global.");
-            
-            // Limpieza
-            document.getElementById('news-title').value = "";
-            document.getElementById('news-body').value = "";
-            tempImageData = null;
-            document.getElementById('image-preview').innerHTML = "Pega imagen (Ctrl+V)";
-            
-            await loadNews();
-            openTab('tab-ver', document.querySelectorAll('.tab-btn')[1]);
-        } catch (e) { 
-            alert("Error: La nube no responde. Inténtalo de nuevo en unos segundos."); 
-        } finally {
-            btn.innerText = "PUBLICAR PARA TODOS";
-            btn.disabled = false;
-        }
-    }
-
-    function render(history) {
-        const feed = document.getElementById('news-feed');
-        const admin = document.getElementById('admin-news-list');
-        
-        if (history.length === 0) {
-            feed.innerHTML = "No hay comunicados.";
-            admin.innerHTML = "Lista vacía.";
-            return;
-        }
-
-        feed.innerHTML = history.map(n => `
-            <div class="news-item">
-                <small>${n.date}</small>
-                <h3>${n.title}</h3>
-                <p>${n.body.replace(/\n/g, '<br>')}</p>
-                ${n.image ? `<img src="${n.image}" class="news-img">` : ''}
-            </div>
-        `).join('');
-
-        admin.innerHTML = history.map(n => `
-            <div class="news-item" style="border-left-color: #27ae60;">
-                <strong>${n.title}</strong><br>
-                <button class="btn-delete" onclick="deleteNews(${n.id})">BORRAR</button>
-            </div>
-        `).join('');
-    }
-
-    // Mantener la función openTab y el evento de paste que ya tenías
-    function openTab(id, btn) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    document.addEventListener('paste', e => {
-        const item = e.clipboardData.items[0];
-        if (item && item.type.indexOf('image') !== -1) {
-            const reader = new FileReader();
-            reader.onload = event => {
-                tempImageData = event.target.result;
-                document.getElementById('image-preview').innerHTML = `<img src="${tempImageData}" style="height:100px;">`;
-            };
-            reader.readAsDataURL(item.getAsFile());
-        }
-    });
-</script>
+        leerNoticias();
+    </script>
+</body>
+</html>
