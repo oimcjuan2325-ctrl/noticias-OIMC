@@ -2,117 +2,26 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Oficial O.I.M.C.</title>
+    <title>O.I.M.C. CHAT</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #0b141a; color: white; }
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 300px; color: #333; }
-        .header { background: #202c33; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; }
-        #chat-box { height: calc(100vh - 140px); overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
-        .msg { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 0.95rem; position: relative; }
-        .msg-others { background: #202c33; align-self: flex-start; border-bottom-left-radius: 0; }
-        .msg-me { background: #005c4b; align-self: flex-end; border-bottom-right-radius: 0; }
-        .user-name { font-weight: bold; font-size: 0.75rem; display: block; margin-bottom: 3px; color: #34b7f1; }
-        .footer { background: #202c33; padding: 10px; display: flex; gap: 10px; position: sticky; bottom: 0; }
-        input[type="text"], input[type="password"] { flex: 1; padding: 12px; border: none; border-radius: 8px; outline: none; }
-        .btn-send { background: #00a884; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-banco { background: #f1c40f; color: black; text-decoration: none; padding: 8px 12px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
+        body { font-family: sans-serif; background: #2c3e50; color: white; text-align: center; padding: 20px; }
+        .caja { background: white; color: black; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; }
+        input { width: 80%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        button { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .banco-link { display: inline-block; margin-top: 20px; color: #f1c40f; font-weight: bold; text-decoration: none; border: 2px solid #f1c40f; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-<div id="login-overlay">
-    <div class="login-box">
-        <h2>O.I.M.C. CHAT</h2>
-        <input type="text" id="user-input" placeholder="Tu Nombre">
-        <input type="password" id="pass-input" placeholder="Tu PIN" style="margin-top:10px;">
-        <button onclick="checkLogin()" style="background:#00a884; color:white; border:none; padding:12px; width:100%; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:15px;">ENTRAR AL CHAT</button>
+    <h1>SISTEMA O.I.M.C.</h1>
+
+    <div class="caja">
+        <h3>Chat Grupal</h3>
+        <iframe src="https://www3.cbox.ws/box/?boxid=3534575&boxtag=z6r2v4" width="100%" height="450" allowtransparency="yes" frameborder="0" marginheight="0" marginwidth="0" scrolling="auto"></iframe>
     </div>
-</div>
 
-<div class="header">
-    <div><strong>O.I.M.C. Comunicaciones</strong></div>
-    <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn-banco">BANCO CENTRAL</a>
-</div>
+    <br>
+    <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="banco-link">🏦 IR AL BANCO CENTRAL</a>
 
-<div id="chat-box">Cargando mensajes...</div>
-
-<div class="footer">
-    <input type="text" id="msg-input" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMsg()">
-    <button onclick="sendMsg()" class="btn-send">ENVIAR</button>
-</div>
-
-<script>
-    const CLOUD_URL = "https://getpantry.cloud/apiv1/pantry/086383e5-89f5-46f9-8664-d67b73895e63/basket/oimc_chat_v1";
-    const users = { "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", "yolanda": "9090", "jesús": "1365" };
-    let myUser = "";
-
-    function checkLogin() {
-        const u = document.getElementById('user-input').value.toLowerCase().trim();
-        const p = document.getElementById('pass-input').value.trim();
-        if (users[u] === p) {
-            myUser = u;
-            document.getElementById('login-overlay').style.display = 'none';
-            loadMsgs();
-            setInterval(loadMsgs, 5000); // Se actualiza solo cada 5 segundos
-        } else { alert("Usuario o PIN incorrecto"); }
-    }
-
-    async function loadMsgs() {
-        try {
-            const res = await fetch(CLOUD_URL);
-            const data = await res.json();
-            render(data.messages || []);
-        } catch (e) { document.getElementById('chat-box').innerHTML = "No hay mensajes. ¡Sé el primero!"; }
-    }
-
-    async function sendMsg() {
-        const input = document.getElementById('msg-input');
-        const text = input.value.trim();
-        if(!text) return;
-
-        input.disabled = true;
-        let history = [];
-        try {
-            const res = await fetch(CLOUD_URL);
-            if(res.ok) {
-                const data = await res.json();
-                history = data.messages || [];
-            }
-        } catch(e) {}
-
-        history.push({ user: myUser, text: text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        
-        // Solo guardamos los últimos 50 mensajes para que no pese mucho
-        if(history.length > 50) history.shift();
-
-        await fetch(CLOUD_URL, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ messages: history })
-        });
-
-        input.value = "";
-        input.disabled = false;
-        input.focus();
-        loadMsgs();
-    }
-
-    function render(msgs) {
-        const chat = document.getElementById('chat-box');
-        const isAtBottom = chat.scrollHeight - chat.clientHeight <= chat.scrollTop + 1;
-        
-        chat.innerHTML = msgs.map(m => `
-            <div class="msg ${m.user === myUser ? 'msg-me' : 'msg-others'}">
-                <span class="user-name">${m.user.toUpperCase()}</span>
-                ${m.text}
-                <div style="font-size:0.6rem; text-align:right; opacity:0.6; margin-top:4px;">${m.time}</div>
-            </div>
-        `).join('');
-
-        if (isAtBottom) chat.scrollTop = chat.scrollHeight;
-    }
-</script>
 </body>
 </html>
