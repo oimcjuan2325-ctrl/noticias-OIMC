@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIARIO OFICIAL - O.I.M.C.</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; margin: 0; background: #e9ebee; color: #1a1a1a; }
+        .masthead { background: #2c3e50; color: white; padding: 40px 20px; text-align: center; border-bottom: 8px double #e74c3c; }
+        .masthead h1 { margin: 0; font-size: 3rem; letter-spacing: 4px; text-transform: uppercase; }
+        
+        .nav-bar { background: #1a252f; padding: 10px; text-align: center; position: sticky; top: 0; }
+        .admin-btn { background: #27ae60; color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; display: none; font-weight: bold; }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        
+        /* Estilo Periódico */
+        .news-card { background: white; padding: 25px; margin-bottom: 30px; border-bottom: 2px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .news-card h2 { margin-top: 0; color: #2c3e50; font-size: 1.8rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .news-meta { color: #e74c3c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .news-content { line-height: 1.6; font-size: 1.1rem; margin: 15px 0; }
+
+        /* Login flotante */
+        .login-trigger { position: fixed; bottom: 20px; right: 20px; opacity: 0.3; transition: 0.5s; }
+        .login-trigger:hover { opacity: 1; }
+
+        /* Formulario Admin */
+        #admin-panel { display: none; background: #d4edda; padding: 20px; border-radius: 10px; margin-bottom: 40px; border: 2px solid #28a745; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+
+<div class="masthead">
+    <h1>EL DIARIO DE LA VICTORIA</h1>
+    <p>Órgano Informativo de la O.I.M.C. | Justicia y Orden</p>
+</div>
+
+<div class="nav-bar">
+    <button id="show-editor-btn" onclick="toggleEditor()" class="admin-btn">+ REDACTAR NUEVO COMUNICADO</button>
+</div>
+
+<div class="container">
+    <div id="admin-panel">
+        <h3 style="margin-top:0">✍️ Nueva Entrada de Diario</h3>
+        <input type="text" id="news-title" placeholder="Título impactante...">
+        <textarea id="news-body" rows="5" placeholder="Escriba la crónica de los hechos..."></textarea>
+        <button onclick="publish()" style="background:#28a745; color:white; border:none; padding:10px 30px; cursor:pointer; font-weight:bold;">LANZAR EDICIÓN</button>
+    </div>
+
+    <div id="news-feed">
+        </div>
+</div>
+
+<div class="login-trigger">
+    <button onclick="askAccess()" style="background:none; border:none; cursor:help;">🔐</button>
+</div>
+
+<script>
+    // Al cargar la web
+    window.onload = function() {
+        loadNews();
+    };
+
+    function askAccess() {
+        const pass = prompt("Identifíquese, Gobernador:");
+        if (pass && pass.toLowerCase() === 'juan') {
+            document.getElementById('show-editor-btn').style.display = 'inline-block';
+            alert("Acceso concedido a la imprenta central.");
+        }
+    }
+
+    function toggleEditor() {
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function publish() {
+        const t = document.getElementById('news-title').value;
+        const b = document.getElementById('news-body').value;
+        const d = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        if (!t || !b) return alert("Falta información en el comunicado.");
+
+        const entry = { title: t, body: b, date: d };
+        let history = JSON.parse(localStorage.getItem('diario_oimc')) || [];
+        history.unshift(entry);
+        localStorage.setItem('diario_oimc', JSON.stringify(history));
+
+        document.getElementById('news-title').value = '';
+        document.getElementById('news-body').value = '';
+        toggleEditor();
+        loadNews();
+    }
+
+    function loadNews() {
+        const feed = document.getElementById('news-feed');
+        const history = JSON.parse(localStorage.getItem('diario_oimc')) || [];
+
+        if (history.length === 0) {
+            feed.innerHTML = "<p style='text-align:center; color:#666;'>No hay ediciones disponibles hoy.</p>";
+            return;
+        }
+
+        feed.innerHTML = history.map(n => `
+            <div class="news-card">
+                <div class="news-meta">Edición del ${n.date}</div>
+                <h2>${n.title}</h2>
+                <div class="news-content">${n.body.replace(/\n/g, '<br>')}</div>
+                <div style="font-size:0.8rem; color:#888;">© Oficina de Prensa O.I.M.C.</div>
+            </div>
+        `).join('');
+    }
+</script>
+
+</body>
+</html>
