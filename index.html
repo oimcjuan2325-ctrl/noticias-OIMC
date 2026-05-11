@@ -3,59 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comunicaciones-O.I.M.C.</title>
+    <title>CENTRAL COMUNICACIONES O.I.M.C.</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #1a252f; color: white; text-align: center; }
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; color: #333; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .header { background: #e74c3c; padding: 20px; font-weight: bold; font-size: 1.5rem; }
-        .nav { background: #34495e; padding: 10px; }
-        .btn-banco { background: #f1c40f; color: #2c3e50; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; margin-top: 10px; }
-        .chat-container { padding: 20px; max-width: 500px; margin: auto; height: 550px; }
-        iframe { border-radius: 10px; background: white; border: none; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
-        button.login-btn { width: 100%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #1a252f; color: white; text-align: center; overflow-x: hidden; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; color: #333; width: 320px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .header { background: #e74c3c; padding: 25px; font-weight: bold; font-size: 1.8rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .nav { background: #34495e; padding: 15px; border-bottom: 3px solid #2c3e50; }
+        .btn-banco { background: #f1c40f; color: #2c3e50; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; display: inline-block; transition: transform 0.2s, background 0.2s; }
+        .btn-banco:hover { background: #d4ac0d; transform: scale(1.05); }
+        .muro-container { padding: 20px; max-width: 1100px; margin: 20px auto; background: rgba(255,255,255,0.05); border-radius: 15px; min-height: 600px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        button.login-btn { width: 100%; padding: 14px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="login-overlay">
     <div class="login-box">
-        <h2 style="margin-top:0;">O.I.M.C.</h2>
-        <p>Identificación Requerida</p>
-        <input type="text" id="user-input" placeholder="Tu Nombre">
+        <h2 style="margin-top:0; color: #e74c3c;">O.I.M.C.</h2>
+        <p style="margin-bottom:20px; font-weight:bold;">Acceso con PIN de Seguridad</p>
+        <input type="text" id="user-input" placeholder="Nombre de Usuario">
         <input type="password" id="pin-input" placeholder="Tu PIN">
-        <button class="login-btn" onclick="verificarAcceso()">ENTRAR AL CHAT</button>
+        <button class="login-btn" onclick="verificarAcceso()">ENTRAR AL SISTEMA</button>
     </div>
 </div>
 
-<div class="header">SISTEMA O.I.M.C.</div>
+<div class="header">CENTRAL DE COMUNICACIONES O.I.M.C.</div>
 
 <div class="nav">
     <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn-banco">🏦 IR AL BANCO CENTRAL</a>
 </div>
 
-<div class="chat-container">
-    <h3>Chat Grupal</h3>
-    <iframe src="https://www.minichat.com/chat/oimc_global_chat" width="100%" height="500"></iframe>
+<div class="muro-container">
+    <h3 style="color: #ecf0f1; text-transform: uppercase;">Muro de Mensajes Global</h3>
+    
+    <div class="padlet-embed" style="border:1px solid rgba(0,0,0,0.1);border-radius:2px;box-sizing:border-box;overflow:hidden;position:relative;width:100%;background:#F4F4F4">
+        <p style="padding:0;margin:0">
+            <iframe src="https://padlet.com/embed/w3mqu086vovgbfiw" frameborder="0" allow="camera;microphone;geolocation;display-capture;clipboard-write" style="width:100%;height:608px;display:block;padding:0;margin:0"></iframe>
+        </p>
+        <div style="display:flex;align-items:center;justify-content:content-end;margin:0;padding:8px 8px 8px 0">
+            <a href="https://padlet.com?ref=embed" style="display:flex;align-items:center;gap:5px;flex-grow:0;margin:0;border:none;padding:0;text-decoration:none" target="_blank">
+                <span aria-hidden="true" style="color:#9E9E9E;font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;line-height:1">Hecho con </span>
+                <img src="https://padlet.net/emails/padlet_email_logo_2026_text-dark-200.png" height="12" style="padding:0;margin:0;background:none;border:none;box-shadow:none;display:block" alt="Padlet">
+            </a>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Tu tabla de usuarios según la foto
-    const usuariosPermitidos = { 
+    const baseDatos = { 
         "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", 
         "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", 
         "yolanda": "9090", "jesús": "1365" 
     };
 
     function verificarAcceso() {
-        const user = document.getElementById('user-input').value.toLowerCase().trim();
-        const pin = document.getElementById('pin-input').value.trim();
+        const u = document.getElementById('user-input').value.toLowerCase().trim();
+        const p = document.getElementById('pin-input').value.trim();
 
-        if (usuariosPermitidos[user] === pin) {
+        if (baseDatos[u] === p) {
             document.getElementById('login-overlay').style.display = 'none';
         } else {
-            alert("Error: PIN o Usuario incorrecto.");
+            alert("Usuario o PIN incorrecto.");
         }
     }
 </script>
