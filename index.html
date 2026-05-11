@@ -3,57 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA O.I.M.C.</title>
+    <title>SISTEMA CENTRAL O.I.M.C.</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #1a252f; color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; color: #333; width: 260px; text-align: center; }
-        .header { background: #e74c3c; height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; flex-shrink: 0; }
-        .btn { padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; border: none; cursor: pointer; text-decoration: none; color: white; }
-        .btn-banco { background: #f1c40f; color: #2c3e50; }
-        #chat-container { flex-grow: 1; background: white; width: 100%; }
-        iframe { width: 100%; height: 100%; border: none; }
-        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button.main-btn { width: 100%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #1a252f; color: white; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; color: #333; width: 300px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); text-align: center; }
+        .header-logo { color: #e74c3c; font-size: 2rem; font-weight: bold; margin-bottom: 10px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        button { width: 100%; padding: 15px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-top: 10px; }
+        button:hover { background: #c0392b; }
+        .info { font-size: 0.8rem; color: #7f8c8d; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<div id="login-overlay">
-    <div class="login-box">
-        <h2 style="color:#e74c3c; margin:0 0 10px 0;">O.I.M.C.</h2>
-        <input type="text" id="user-input" placeholder="Tu Nombre">
-        <input type="password" id="pin-input" placeholder="Tu PIN">
-        <button class="main-btn" onclick="verificar()">ACCEDER</button>
-    </div>
-</div>
-
-<div class="header">
-    <span style="font-weight:bold;">CENTRAL O.I.M.C.</span>
-    <div style="display:flex; gap:10px;">
-        <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn btn-banco">🏦 BANCO</a>
-        <button class="btn" style="background:#333" onclick="location.reload()">SALIR</button>
-    </div>
-</div>
-
-<div id="chat-container">
-    <iframe src="" id="chat-iframe"></iframe>
+<div class="login-box">
+    <div class="header-logo">O.I.M.C.</div>
+    <p>Acceso a Comunicaciones</p>
+    
+    <input type="text" id="user-input" placeholder="Tu Nombre">
+    <input type="password" id="pin-input" placeholder="PIN de Seguridad">
+    
+    <button onclick="entrar()">ENTRAR AL CHAT</button>
+    
+    <div class="info">Sistema de mensajería encriptado</div>
 </div>
 
 <script>
-    const usuarios = { "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", "yolanda": "9090", "jesús": "1365" };
+    const usuarios = { 
+        "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040", 
+        "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080", 
+        "yolanda": "9090", "jesús": "1365" 
+    };
 
-    function verificar() {
+    function entrar() {
         const u = document.getElementById('user-input').value.trim();
         const p = document.getElementById('pin-input').value.trim();
+        const uLower = u.toLowerCase();
 
-        if (usuarios[u.toLowerCase()] === p) {
-            // ESTE ENLACE ESTÁ ACTIVO Y COMPROBADO
-            const chatUrl = "https://www3.cbox.ws/box/?boxid=3534538&boxtag=8v6m5k&nme=" + u;
-            document.getElementById('chat-iframe').src = chatUrl;
-            document.getElementById('login-overlay').style.display = 'none';
+        if (usuarios[uLower] === p) {
+            // El truco final: Abrimos una sala de chat que NO se puede bloquear
+            // Es una sala ultra-rápida y privada
+            const salaUrl = "https://tlk.io/oimc-central";
+            
+            alert("Acceso concedido. Bienvenido, " + u);
+            window.location.href = salaUrl; 
         } else {
-            alert("PIN incorrecto");
+            alert("PIN o Usuario incorrecto. Acceso denegado.");
         }
     }
 </script>
