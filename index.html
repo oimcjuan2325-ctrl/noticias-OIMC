@@ -16,12 +16,12 @@
         .container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
         .tab-content { display: none; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 300px; }
         .tab-content.active { display: block; }
-        .news-item { padding: 15px; border-left: 5px solid #e74c3c; background: #f8f9fa; margin-bottom: 15px; border-radius: 4px; }
+        .news-item { padding: 15px; border-left: 5px solid #e74c3c; background: #f8f9fa; margin-bottom: 15px; border-radius: 4px; position: relative; }
         input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
         .btn-main { background: #e74c3c; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
         .banco-link-card { text-align: center; padding: 40px; border: 2px dashed #3498db; border-radius: 10px; }
         .btn-banco { display: inline-block; background: #3498db; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.3s; }
-        .btn-banco:hover { background: #2980b9; transform: scale(1.05); }
+        .btn-delete { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -43,15 +43,14 @@
 <div id="nav-bar" class="nav-tabs">
     <button class="tab-btn active" onclick="openTab('tab-banco', this)">🏦 BANCO</button>
     <button class="tab-btn" onclick="openTab('tab-ver', this)">📰 NOTICIAS</button>
-    <button id="admin-tab-btn" class="tab-btn" onclick="openTab('tab-redactar', this)" style="display: none; color: #2ecc71;">✍️ REDACTAR</button>
+    <button id="admin-tab-btn" class="tab-btn" onclick="openTab('tab-redactar', this)" style="display: none; color: #2ecc71;">✍️ GESTIONAR</button>
 </div>
 
 <div class="container">
     <div id="tab-banco" class="tab-content active">
         <div class="banco-link-card">
             <h2 style="color:#2c3e50;">Terminal Bancaria O.I.M.C.</h2>
-            <p>Estado de la conexión: <span style="color:#27ae60; font-weight:bold;">EN LÍNEA</span></p>
-            <p>Haga clic en el botón inferior para abrir la gestión de cuentas en una nueva pestaña.</p>
+            <p>Estado: <span style="color:#27ae60; font-weight:bold;">EN LÍNEA</span></p>
             <a href="https://banco-oimc-h47hsdjbghr7jq3thguvva.streamlit.app" target="_blank" class="btn-banco">IR AL BANCO O.I.M.C.</a>
         </div>
     </div>
@@ -62,15 +61,18 @@
     </div>
 
     <div id="tab-redactar" class="tab-content">
-        <h2 style="color:#27ae60;">Consola de Redacción - Gobernación</h2>
-        <input type="text" id="news-title" placeholder="Título del decreto o noticia...">
-        <textarea id="news-body" rows="6" placeholder="Escriba el contenido aquí..."></textarea>
-        <button onclick="saveNews()" class="btn-main" style="background:#27ae60;">PUBLICAR COMUNICADO</button>
+        <h2 style="color:#27ae60;">Consola de Mando</h2>
+        <input type="text" id="news-title" placeholder="Título...">
+        <textarea id="news-body" rows="4" placeholder="Contenido..."></textarea>
+        <button onclick="saveNews()" class="btn-main" style="background:#27ae60; margin-bottom: 20px;">PUBLICAR</button>
+        
+        <h3 style="border-top: 1px solid #ccc; padding-top: 15px;">Panel de Borrado</h3>
+        <div id="admin-news-list">
+            </div>
     </div>
 </div>
 
 <script>
-    // BASE DE DATOS ACTUALIZADA SEGÚN TABLA OFICIAL
     const usersDB = {
         "juan": "2313", "iñaki": "1010", "asier": "2020", "amets": "4040",
         "erika": "5050", "nahia": "6060", "gaizka": "7070", "mikel": "8080",
@@ -80,15 +82,12 @@
     function checkLogin() {
         const user = document.getElementById('user-input').value.toLowerCase().trim();
         const pass = document.getElementById('pass-input').value.trim();
-
         if (usersDB[user] && usersDB[user] === pass) {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('nav-bar').style.display = 'flex';
             if (user === 'juan') { document.getElementById('admin-tab-btn').style.display = 'block'; }
             loadNews();
-        } else {
-            alert("Acceso denegado. PIN o Usuario inválido.");
-        }
+        } else { alert("PIN o Usuario inválido."); }
     }
 
     function openTab(tabId, btn) {
@@ -101,32 +100,51 @@
     function saveNews() {
         const t = document.getElementById('news-title').value;
         const b = document.getElementById('news-body').value;
-        if (!t || !b) return alert("Complete los campos");
-
-        const news = { title: t, body: b, date: new Date().toLocaleString() };
+        if (!t || !b) return alert("Rellene los campos");
+        const news = { id: Date.now(), title: t, body: b, date: new Date().toLocaleString() };
         let history = JSON.parse(localStorage.getItem('jasooimc_news')) || [];
         history.unshift(news);
         localStorage.setItem('jasooimc_news', JSON.stringify(history));
-
         document.getElementById('news-title').value = "";
         document.getElementById('news-body').value = "";
         loadNews();
-        alert("Comunicado publicado con éxito.");
-        openTab('tab-ver', document.querySelectorAll('.tab-btn')[1]);
+        alert("Publicado.");
+    }
+
+    function deleteNews(id) {
+        if(confirm("¿Seguro que desea eliminar este comunicado oficial?")) {
+            let history = JSON.parse(localStorage.getItem('jasooimc_news')) || [];
+            history = history.filter(n => n.id !== id);
+            localStorage.setItem('jasooimc_news', JSON.stringify(history));
+            loadNews();
+        }
     }
 
     function loadNews() {
         const feed = document.getElementById('news-feed');
+        const adminList = document.getElementById('admin-news-list');
         const history = JSON.parse(localStorage.getItem('jasooimc_news')) || [];
+        
         if (history.length === 0) {
-            feed.innerHTML = "<p style='text-align:center; color:#888;'>No hay comunicados oficiales en este momento.</p>";
+            feed.innerHTML = "<p>No hay noticias.</p>";
+            adminList.innerHTML = "<p>No hay nada que borrar.</p>";
             return;
         }
+
+        // Cargar en vista pública
         feed.innerHTML = history.map(n => `
             <div class="news-item">
                 <small style="color:#e74c3c; font-weight:bold;">${n.date}</small>
-                <h3 style="margin: 5px 0;">${n.title}</h3>
-                <p style="margin: 0; line-height: 1.5;">${n.body.replace(/\n/g, '<br>')}</p>
+                <h3>${n.title}</h3>
+                <p>${n.body.replace(/\n/g, '<br>')}</p>
+            </div>
+        `).join('');
+
+        // Cargar en vista de administrador (con botón borrar)
+        adminList.innerHTML = history.map(n => `
+            <div style="border-bottom:1px solid #eee; padding:10px 0;">
+                <strong>${n.title}</strong> (${n.date})
+                <br><button onclick="deleteNews(${n.id})" class="btn-delete">BORRAR DEFINITIVAMENTE</button>
             </div>
         `).join('');
     }
